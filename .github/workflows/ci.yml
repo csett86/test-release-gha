@@ -35,15 +35,11 @@ jobs:
       VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: update version
         run: |
           echo ${VERSION_NUMBER} > Seamly2D-x86_64.AppImage
-
-      - name: Upload Seamly2D-x86_64.AppImage artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: Seamly2D-x86_64.AppImage
           path: Seamly2D-x86_64.AppImage
@@ -56,16 +52,12 @@ jobs:
       VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: update version
         run: |
           mkdir out
           echo ${VERSION_NUMBER} > ./out/Seamly2D-macos
-
-      - name: Upload Seamly2D-macos.zip artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: Seamly2D-macos
           path: out/Seamly2D-macos
@@ -78,16 +70,12 @@ jobs:
       VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: update version
         shell: bash
         run: |
           echo ${VERSION_NUMBER} > Seamly2D-windows
-
-      - name: Upload Seamly2D-windows.zip artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: Seamly2D-windows
           path: Seamly2D-windows
@@ -100,6 +88,7 @@ jobs:
       VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
 
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: Seamly2D-x86_64.AppImage
