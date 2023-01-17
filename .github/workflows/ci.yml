@@ -16,36 +16,31 @@ jobs:
   release-data:
     runs-on: ubuntu-22.04
     outputs:
-      upload_url: ${{ steps.release-data.outputs.upload_url }}
+      tag_name: ${{ steps.create-name-and-tag.outputs.tag_name }}
+      release_name: ${{ steps.create-name-and-tag.outputs.release_name }}
 
     # The tag name is vYYYY.MM.DD.hhmm to create simple, easy-to-read "rolling release" versioning
     steps:
       - name: create name and tag
         id: create-name-and-tag
         run: |
-          echo "TAG_NAME=$(date +v%Y.%-m.%-d.%-H%M)" >> $GITHUB_ENV
-          echo "RELEASE_NAME=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_ENV
+          echo "tag_name=$(date +v%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
+          echo "release_name=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
 
       - name: create release data
-        # output is 'upload_url'
-        id: release-data
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name:  ${{ env.TAG_NAME }}
-          release_name: ${{ env.RELEASE_NAME }}
-          body: Build auto weekly release - Published full release
-          # create published
-          draft: false
-          # create a full release, not a pre-release
-          prerelease: false
+          tag_name:  ${{ steps.create-name-and-tag.outputs.tag_name }}
+          name: ${{ steps.create-name-and-tag.outputs.release_name }}
+          draft: true
+          generate_release_notes: true
 
   linux:
     runs-on: ubuntu-18.04  # build on the oldest supported LTS so that resulting binaries are compatible with older and newer Linux releases
     needs: release-data
     env:
-      UPLOAD_URL: "${{ needs.release-data.outputs.upload_url }}"
+      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
+      RELEASE_NAME: ${{ needs.release-data.outputs.release_name }}
 
     steps:
       - name: checkout code
@@ -53,23 +48,23 @@ jobs:
 
       - name: update version
         run: |
-          date +%Y.%-m.%-d.%-H%M
+          echo ${RELEASE_NAME}
           touch Seamly2D-x86_64.AppImage
 
-      - name: upload file as release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: upload file to release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./Seamly2D-x86_64.AppImage
-          asset_name: Seamly2D-x86_64.AppImage
+          tag_name: ${{ env.TAG_NAME }}
+          fail_on_unmatched_files: true
+          files: |
+            Seamly2D-x86_64.AppImage
 
   macos:
     runs-on: macos-latest
     needs: release-data
     env:
-      UPLOAD_URL: "${{ needs.release-data.outputs.upload_url }}"
+      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
+      RELEASE_NAME: ${{ needs.release-data.outputs.release_name }}
 
     steps:
       - name: checkout code
@@ -77,23 +72,23 @@ jobs:
 
       - name: update version
         run: |
-          date +%Y.%-m.%-d.%-H%M
+          echo ${RELEASE_NAME}
           touch ./out/Seamly2D-macos.zip
 
-      - name: upload Seamly2D-macos.zip as pre-release to Github Releases
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: upload file to release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./out/Seamly2D-macos.zip
-          asset_name: Seamly2D-macos.zip
+          tag_name: ${{ env.TAG_NAME }}
+          fail_on_unmatched_files: true
+          files: |
+            out/Seamly2D-macos.zip
 
   windows:
     runs-on: windows-latest
     needs: release-data
     env:
-      UPLOAD_URL: "${{ needs.release-data.outputs.upload_url }}"
+      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
+      RELEASE_NAME: ${{ needs.release-data.outputs.release_name }}
 
     steps:
       - name: checkout code
@@ -102,14 +97,13 @@ jobs:
       - name: update version
         shell: bash
         run: |
-          date +%Y.%-m.%-d.%-H%M
-          touch ../windows-build/Seamly2D-windows.zip
+          echo ${RELEASE_NAME}
+          touch Seamly2D-windows.zip
 
       - name: upload unsigned Seamly2D-windows.zip as release to Github Releases
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ../windows-build/Seamly2D-windows.zip
-          asset_name: Seamly2D-windows.zip
+          tag_name: ${{ env.TAG_NAME }}
+          fail_on_unmatched_files: true
+          files: |
+            Seamly2D-windows.zip
