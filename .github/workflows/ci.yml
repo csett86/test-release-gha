@@ -71,6 +71,7 @@ jobs:
 
       - name: update version
         run: |
+          mkdir out
           echo ${VERSION_NUMBER} > ./out/Seamly2D-macos
           zip out/Seamly2D-macos
 
@@ -97,15 +98,14 @@ jobs:
         shell: bash
         run: |
           echo ${VERSION_NUMBER} > Seamly2D-windows
-          zip Seamly2D-windows
 
-      - name: upload unsigned Seamly2D-windows.zip as release to Github Releases
+      - name: upload unsigned Seamly2D-windows as release to Github Releases
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG_NAME }}
           fail_on_unmatched_files: true
           files: |
-            Seamly2D-windows.zip
+            Seamly2D-windows
 
   publish:
     runs-on: ubuntu-22.04
