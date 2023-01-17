@@ -48,8 +48,7 @@ jobs:
 
       - name: update version
         run: |
-          echo ${RELEASE_NAME}
-          touch Seamly2D-x86_64.AppImage
+          echo ${RELEASE_NAME} > Seamly2D-x86_64.AppImage
 
       - name: upload file to release
         uses: softprops/action-gh-release@v1
@@ -72,8 +71,8 @@ jobs:
 
       - name: update version
         run: |
-          echo ${RELEASE_NAME}
-          touch ./out/Seamly2D-macos.zip
+          echo ${RELEASE_NAME} > ./out/Seamly2D-macos
+          zip out/Seamly2D-macos
 
       - name: upload file to release
         uses: softprops/action-gh-release@v1
@@ -97,8 +96,8 @@ jobs:
       - name: update version
         shell: bash
         run: |
-          echo ${RELEASE_NAME}
-          touch Seamly2D-windows.zip
+          echo ${RELEASE_NAME} > Seamly2D-windows
+          zip Seamly2D-windows
 
       - name: upload unsigned Seamly2D-windows.zip as release to Github Releases
         uses: softprops/action-gh-release@v1
