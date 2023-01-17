@@ -88,7 +88,6 @@ jobs:
       VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
 
     steps:
-      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: Seamly2D-x86_64.AppImage
