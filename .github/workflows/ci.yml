@@ -64,7 +64,6 @@ jobs:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ./Seamly2D-x86_64.AppImage
           asset_name: Seamly2D-x86_64.AppImage
-          asset_content_type: application/octet-stream
 
   macos:
     runs-on: macos-latest
@@ -89,7 +88,6 @@ jobs:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ./out/Seamly2D-macos.zip
           asset_name: Seamly2D-macos.zip
-          asset_content_type: application/zip
 
   windows:
     runs-on: windows-latest
@@ -115,4 +113,3 @@ jobs:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ../windows-build/Seamly2D-windows.zip
           asset_name: Seamly2D-windows.zip
-          asset_content_type: application/zip
