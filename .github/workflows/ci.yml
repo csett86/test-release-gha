@@ -30,7 +30,7 @@ jobs:
       - name: create release data
         uses: softprops/action-gh-release@v1
         with:
-          tag_name:  ${{ steps.create-name-and-tag.outputs.tag_name }}
+          tag_name: ${{ steps.create-name-and-tag.outputs.tag_name }}
           name: ${{ steps.create-name-and-tag.outputs.release_name }}
           draft: true
           generate_release_notes: true
@@ -106,3 +106,16 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             Seamly2D-windows.zip
+
+  publish:
+    runs-on: ubuntu-22.04
+    needs: [release-data, windows, linux, macos]
+    env:
+      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
+      RELEASE_NAME: ${{ needs.release-data.outputs.release_name }}
+
+      - name: create release data
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          draft: false
