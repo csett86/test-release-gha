@@ -73,7 +73,6 @@ jobs:
         run: |
           mkdir out
           echo ${VERSION_NUMBER} > ./out/Seamly2D-macos
-          zip out/Seamly2D-macos
 
       - name: upload file to release
         uses: softprops/action-gh-release@v1
@@ -81,7 +80,7 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           fail_on_unmatched_files: true
           files: |
-            out/Seamly2D-macos.zip
+            out/Seamly2D-macos
 
   windows:
     runs-on: windows-latest
