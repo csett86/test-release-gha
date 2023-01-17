@@ -112,6 +112,7 @@ jobs:
         with:
           name: Seamly2D-windows
           path: Seamly2D-windows
+      - run: ls -al
       - name: create and publish release
         uses: softprops/action-gh-release@v1
         with:
