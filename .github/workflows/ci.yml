@@ -1,6 +1,5 @@
 name: Build and publish release
 
-# Build on Mondays at 01:30 UTC
 on:
   schedule:
     - cron: '30 1 * * MON'
@@ -8,6 +7,8 @@ on:
   push:
     branches:
     - main
+  pull_request:
+
 
 permissions:
   contents: write
@@ -19,11 +20,16 @@ jobs:
       version_number: ${{ steps.create-version.outputs.version_number }}
 
     # The version number is YYYY.MM.DD.hhmm to create simple, easy-to-read "rolling release" versioning
+    # for pull requests before merge keep a static version number
     steps:
       - name: create version number
         id: create-version
         run: |
-          echo "version_number=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
+          if [ $GITHUB_EVENT_NAME = 'pull_request' ]; then
+            echo "version_number=0.6.0.1" >> $GITHUB_OUTPUT
+          else
+            echo "version_number=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
+          fi
 
   linux:
     runs-on: ubuntu-18.04  # build on the oldest supported LTS so that resulting binaries are compatible with older and newer Linux releases
@@ -76,6 +82,7 @@ jobs:
           path: Seamly2D-windows
 
   publish:
+    if: github.event_name == 'push' | github.event_name == 'schedule' | github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     needs: [version, windows, linux, macos]
     env:
@@ -98,6 +105,7 @@ jobs:
           name: ${{ env.VERSION_NUMBER }}
           generate_release_notes: true
           fail_on_unmatched_files: true
+          prerelease: ${{ github.event_name == 'push' }}
           files: |
             Seamly2D-x86_64.AppImage
             Seamly2D-macos
