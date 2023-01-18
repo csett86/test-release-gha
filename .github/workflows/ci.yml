@@ -13,26 +13,23 @@ permissions:
   contents: write
 
 jobs:
-  release-data:
+  version:
     runs-on: ubuntu-22.04
     outputs:
-      tag_name: ${{ steps.create-version-and-tag.outputs.tag_name }}
-      version_number: ${{ steps.create-version-and-tag.outputs.version_number }}
+      version_number: ${{ steps.create-version.outputs.version_number }}
 
-    # The tag name is vYYYY.MM.DD.hhmm to create simple, easy-to-read "rolling release" versioning
+    # The version number is YYYY.MM.DD.hhmm to create simple, easy-to-read "rolling release" versioning
     steps:
-      - name: create version and tag
-        id: create-version-and-tag
+      - name: create version number
+        id: create-version
         run: |
-          echo "tag_name=$(date +v%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
           echo "version_number=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
 
   linux:
     runs-on: ubuntu-18.04  # build on the oldest supported LTS so that resulting binaries are compatible with older and newer Linux releases
-    needs: release-data
+    needs: version
     env:
-      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
-      VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
+      VERSION_NUMBER: ${{ needs.version.outputs.version_number }}
 
     steps:
       - uses: actions/checkout@v3
@@ -46,10 +43,9 @@ jobs:
 
   macos:
     runs-on: macos-latest
-    needs: release-data
+    needs: version
     env:
-      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
-      VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
+      VERSION_NUMBER: ${{ needs.version.outputs.version_number }}
 
     steps:
       - uses: actions/checkout@v3
@@ -64,10 +60,9 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    needs: release-data
+    needs: version
     env:
-      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
-      VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
+      VERSION_NUMBER: ${{ needs.version.outputs.version_number }}
 
     steps:
       - uses: actions/checkout@v3
@@ -82,10 +77,9 @@ jobs:
 
   publish:
     runs-on: ubuntu-22.04
-    needs: [release-data, windows, linux, macos]
+    needs: [version, windows, linux, macos]
     env:
-      TAG_NAME: ${{ needs.release-data.outputs.tag_name }}
-      VERSION_NUMBER: ${{ needs.release-data.outputs.version_number }}
+      VERSION_NUMBER: ${{ needs.version.outputs.version_number }}
 
     steps:
       - uses: actions/download-artifact@v3
@@ -100,7 +94,7 @@ jobs:
       - name: create and publish release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG_NAME }}
+          tag_name: v${{ env.VERSION_NUMBER }}
           name: ${{ env.VERSION_NUMBER }}
           generate_release_notes: true
           fail_on_unmatched_files: true
