@@ -98,13 +98,14 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Seamly2D-windows
-      - name: create and publish release
-        uses: softprops/action-gh-release@v1
+      - name: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION_NUMBER }}
           name: ${{ env.VERSION_NUMBER }}
           generate_release_notes: true
           fail_on_unmatched_files: true
+          # push event is triggered after pull request is merged, and in these cases mark as prerelease
+          # all other (schedule and manual) are not marked as prerelease
           prerelease: ${{ github.event_name == 'push' }}
           files: |
             Seamly2D-x86_64.AppImage
