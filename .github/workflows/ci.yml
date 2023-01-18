@@ -25,10 +25,10 @@ jobs:
       - name: create version number
         id: create-version
         run: |
-          if [ $GITHUB_EVENT_NAME = 'pull_request' ]; then
-            echo "version_number=0.6.0.1" >> $GITHUB_OUTPUT
-          else
+          if [ $GITHUB_EVENT_NAME = 'schedule' ] || [ $GITHUB_EVENT_NAME = 'workflow_dispatch' ] || [ $GITHUB_EVENT_NAME = 'push' ] ; then
             echo "version_number=$(date +%Y.%-m.%-d.%-H%M)" >> $GITHUB_OUTPUT
+          else
+            echo "version_number=0.6.0.1" >> $GITHUB_OUTPUT
           fi
 
   linux:
@@ -82,7 +82,7 @@ jobs:
           path: Seamly2D-windows
 
   publish:
-    if: github.event_name == 'push' | github.event_name == 'schedule' | github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-22.04
     needs: [version, windows, linux, macos]
     env:
