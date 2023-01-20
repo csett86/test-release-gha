@@ -46,6 +46,7 @@ jobs:
         with:
           name: Seamly2D-x86_64.AppImage
           path: Seamly2D-x86_64.AppImage
+          if-no-files-found: error
 
   macos:
     runs-on: macos-latest
@@ -63,6 +64,7 @@ jobs:
         with:
           name: Seamly2D-macos
           path: out/Seamly2D-macos
+          if-no-files-found: error
 
   windows:
     runs-on: windows-latest
@@ -80,6 +82,7 @@ jobs:
         with:
           name: Seamly2D-windows
           path: Seamly2D-windows
+          if-no-files-found: error
 
   publish:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
