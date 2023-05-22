@@ -30,7 +30,7 @@ jobs:
           fi
 
   linux:
-    runs-on: ubuntu-18.04  # build on the oldest supported LTS so that resulting binaries are compatible with older and newer Linux releases
+    runs-on: ubuntu-20.04  # build on the oldest supported LTS so that resulting binaries are compatible with older and newer Linux releases
     needs: version
     env:
       VERSION_NUMBER: ${{ needs.version.outputs.version_number }}
